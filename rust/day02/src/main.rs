@@ -39,6 +39,7 @@ fn parse(input: &str) -> HashMap<GameID, Game> {
     let mut games = HashMap::new();
 
     let r = regex!(r"Game (\d+): (.+)");
+    let cubes_regex = regex!(r"(\d+) (red|blue|green)");
 
     for line in input.lines() {
         let matched = r.captures(line).unwrap();
@@ -46,25 +47,23 @@ fn parse(input: &str) -> HashMap<GameID, Game> {
         let id = matched.get(1).unwrap().as_str().parse::<u32>().unwrap();
         let mut game = Game::new(id);
 
-        for set in matched.get(2).unwrap().as_str().split("; ") {
-            for cube in set.split(", ") {
-                let mut iter = cube.split(" ");
+        for (_, [count, color]) in cubes_regex
+            .captures_iter(matched.get(2).unwrap().as_str())
+            .map(|c| c.extract())
+        {
+            let count = count.parse::<u32>().unwrap();
 
-                let count = iter.next().unwrap().parse::<u32>().unwrap();
-                let color = iter.next().unwrap();
-
-                match color {
-                    "red" => {
-                        game.r = count.max(game.r);
-                    }
-                    "green" => {
-                        game.g = count.max(game.g);
-                    }
-                    "blue" => {
-                        game.b = count.max(game.b);
-                    }
-                    _ => panic!("Unknown color: {}", color),
+            match color {
+                "red" => {
+                    game.r = count.max(game.r);
                 }
+                "green" => {
+                    game.g = count.max(game.g);
+                }
+                "blue" => {
+                    game.b = count.max(game.b);
+                }
+                _ => panic!("Unknown color: {}", color),
             }
         }
 
