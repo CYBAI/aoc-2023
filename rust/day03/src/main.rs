@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use aoc_utils::read_file;
 
@@ -13,6 +13,7 @@ struct Number {
 #[derive(Debug)]
 struct Board {
     numbers: Vec<Number>,
+    ratios: HashMap<Coordinate, Vec<u32>>,
 }
 
 fn main() -> Result<(), ()> {
@@ -20,6 +21,7 @@ fn main() -> Result<(), ()> {
     let board = parse(&input);
 
     println!("Part 1: {}", part1(&board));
+    println!("Part 2: {}", part2(&board));
 
     Ok(())
 }
@@ -30,6 +32,7 @@ fn is_symbol(c: char) -> bool {
 
 fn parse(input: &str) -> Board {
     let mut numbers = Vec::new();
+    let mut ratios = HashMap::new();
     let mut symbols = HashMap::new();
     let height = input.lines().count();
     let width = input.lines().next().map(|l| l.trim().len()).unwrap_or(0);
@@ -49,7 +52,7 @@ fn parse(input: &str) -> Board {
     }
 
     for y in 0..height {
-        let mut curr_num: Option<(u32, bool)> = None;
+        let mut curr_num: Option<(u32, bool, HashSet<Coordinate>)> = None;
 
         for x in 0..width {
             let coord = (x, y);
@@ -59,22 +62,38 @@ fn parse(input: &str) -> Board {
                 let siblings = generate_siblings(&coord, &(width, height));
                 let is_part = siblings.iter().any(|coord| symbols.contains_key(&coord));
 
+                let ratios = siblings
+                    .iter()
+                    .filter_map(|(sx, sy)| {
+                        if raw_board[*sy][*sx] == '*' {
+                            Some((*sx, *sy))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<HashSet<_>>();
+
                 match curr_num {
-                    Some((p, prev_b)) => {
+                    Some((p, prev_b, prev_r)) => {
                         curr_num = Some((
                             p * 10 + n,
                             prev_b || is_part,
+                            prev_r.union(&ratios).cloned().collect(),
                         ));
                     }
                     None => {
-                        curr_num = Some((n, is_part));
+                        curr_num = Some((n, is_part, ratios));
                     }
                 }
             }
 
             if !c.is_digit(10) || x == width - 1 {
-                if let Some((value, is_part)) = curr_num {
+                if let Some((value, is_part, rs)) = curr_num {
                     numbers.push(Number { value, is_part });
+
+                    for coord in rs {
+                        ratios.entry(coord).or_insert(Vec::new()).push(value);
+                    }
 
                     curr_num = None;
                 }
@@ -82,7 +101,7 @@ fn parse(input: &str) -> Board {
         }
     }
 
-    Board { numbers }
+    Board { numbers, ratios }
 }
 
 fn part1(board: &Board) -> u32 {
@@ -90,6 +109,20 @@ fn part1(board: &Board) -> u32 {
         .numbers
         .iter()
         .filter_map(|num| if num.is_part { Some(num.value) } else { None })
+        .sum()
+}
+
+fn part2(board: &Board) -> u32 {
+    board
+        .ratios
+        .iter()
+        .filter_map(|(_, rs)| {
+            if rs.len() == 2 {
+                Some(rs[0] * rs[1])
+            } else {
+                None
+            }
+        })
         .sum()
 }
 
@@ -136,4 +169,21 @@ fn test_part1() {
 
     let board = parse(input);
     assert_eq!(part1(&board), 4361);
+}
+
+#[test]
+fn test_part2() {
+    let input = "467..114..
+    ...*......
+    ..35..633.
+    ......#...
+    617*......
+    .....+.58.
+    ..592.....
+    ......755.
+    ...$.*....
+    .664.598..";
+
+    let board = parse(input);
+    assert_eq!(part2(&board), 467835);
 }
