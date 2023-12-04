@@ -27,7 +27,7 @@ fn main() -> Result<(), ()> {
 }
 
 fn is_symbol(c: char) -> bool {
-    !c.is_digit(10) && c != '.'
+    !c.is_ascii_digit() && c != '.'
 }
 
 fn parse(input: &str) -> Board {
@@ -60,7 +60,7 @@ fn parse(input: &str) -> Board {
 
             if let Some(n) = c.to_digit(10) {
                 let siblings = generate_siblings(&coord, &(width, height));
-                let is_part = siblings.iter().any(|coord| symbols.contains_key(&coord));
+                let is_part = siblings.iter().any(|coord| symbols.contains_key(coord));
 
                 let ratios = siblings
                     .iter()
@@ -87,7 +87,7 @@ fn parse(input: &str) -> Board {
                 }
             }
 
-            if !c.is_digit(10) || x == width - 1 {
+            if !c.is_ascii_digit() || x == width - 1 {
                 if let Some((value, is_part, rs)) = curr_num {
                     numbers.push(Number { value, is_part });
 
@@ -133,16 +133,14 @@ fn generate_siblings(coord: &Coordinate, boundary: &Coordinate) -> Vec<Coordinat
     let x = x as isize;
     let y = y as isize;
 
-    vec![
-        (x + 1, y),
+    [(x + 1, y),
         (x + 1, y + 1),
         (x + 1, y - 1),
         (x, y + 1),
         (x, y - 1),
         (x - 1, y),
         (x - 1, y + 1),
-        (x - 1, y - 1),
-    ]
+        (x - 1, y - 1)]
     .iter()
     .filter_map(|(x, y)| {
         if 0 <= *x && (*x as usize) < bx && 0 <= *y && (*y as usize) < by {

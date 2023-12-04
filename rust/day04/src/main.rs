@@ -61,7 +61,7 @@ fn parse(input: &str) -> Vec<Card> {
     cards
 }
 
-fn part1(cards: &Vec<Card>) -> u32 {
+fn part1(cards: &[Card]) -> u32 {
     cards
         .iter()
         .map(|card| {
@@ -76,7 +76,7 @@ fn part1(cards: &Vec<Card>) -> u32 {
         .sum()
 }
 
-fn part2(cards: &Vec<Card>) -> u32 {
+fn part2(cards: &[Card]) -> u32 {
     let boundary = cards.len();
     let mut ans = vec![1; boundary];
 
@@ -101,7 +101,7 @@ fn test_part1() {
     Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
     Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
 
-    let cards = parse(&input);
+    let cards = parse(input);
     assert_eq!(part1(&cards), 13);
 }
 
@@ -115,6 +115,6 @@ fn test_part2() {
     Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
     Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
 
-    let cards = parse(&input);
+    let cards = parse(input);
     assert_eq!(part2(&cards), 30);
 }
