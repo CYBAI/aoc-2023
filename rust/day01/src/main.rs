@@ -1,12 +1,8 @@
-use aoc_utils::read_file;
-
-fn main() -> Result<(), ()> {
-    let input = read_file("day01/src/input")?;
+fn main() {
+    let input = include_str!("./input");
 
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
-
-    Ok(())
 }
 
 fn part1(input: &str) -> u32 {

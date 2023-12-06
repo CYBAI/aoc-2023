@@ -12,10 +12,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_utils"
-version = "0.1.0"
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -63,31 +59,21 @@ dependencies = [
 [[package]]
 name = "day01"
 version = "0.1.0"
-dependencies = [
- "aoc_utils",
-]
 
 [[package]]
 name = "day02"
 version = "0.1.0"
 dependencies = [
- "aoc_utils",
  "lazy-regex",
 ]
 
 [[package]]
 name = "day03"
 version = "0.1.0"
-dependencies = [
- "aoc_utils",
-]
 
 [[package]]
 name = "day04"
 version = "0.1.0"
-dependencies = [
- "aoc_utils",
-]
 
 [[package]]
 name = "day05"

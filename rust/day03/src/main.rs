@@ -1,7 +1,5 @@
 use std::collections::{HashMap, HashSet};
 
-use aoc_utils::read_file;
-
 type Coordinate = (usize, usize);
 
 #[derive(Debug)]
@@ -16,14 +14,12 @@ struct Board {
     ratios: HashMap<Coordinate, Vec<u32>>,
 }
 
-fn main() -> Result<(), ()> {
-    let input = read_file("day03/src/input")?;
+fn main() {
+    let input = include_str!("./input");
     let board = parse(&input);
 
     println!("Part 1: {}", part1(&board));
     println!("Part 2: {}", part2(&board));
-
-    Ok(())
 }
 
 fn is_symbol(c: char) -> bool {

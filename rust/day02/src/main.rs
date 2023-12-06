@@ -1,16 +1,13 @@
 use std::collections::HashMap;
 
-use aoc_utils::read_file;
 use lazy_regex::regex;
 
-fn main() -> Result<(), ()> {
-    let input = read_file("day02/src/input")?;
+fn main() {
+    let input = include_str!("./input");
     let games = parse(&input);
 
     println!("Part 1: {}", part1(&games));
     println!("Part 2: {}", part2(&games));
-
-    Ok(())
 }
 
 type GameID = u32;

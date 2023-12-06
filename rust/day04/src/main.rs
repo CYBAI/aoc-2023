@@ -1,7 +1,5 @@
 use std::collections::HashSet;
 
-use aoc_utils::read_file;
-
 #[derive(Debug)]
 struct Card {
     winning: HashSet<u32>,
@@ -17,14 +15,12 @@ impl Card {
     }
 }
 
-fn main() -> Result<(), ()> {
-    let input = read_file("day04/src/input")?;
+fn main() {
+    let input = include_str!("./input");
     let cards = parse(&input);
 
     println!("Part 1: {}", part1(&cards));
     println!("Part 2: {}", part2(&cards));
-
-    Ok(())
 }
 
 fn parse(input: &str) -> Vec<Card> {
