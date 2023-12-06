@@ -1,8 +1,11 @@
+use rayon::{slice::ParallelSlice, iter::ParallelIterator};
+
 fn main() {
     let input = include_str!("./input");
     let almanac = Almanac::parse(input);
 
     println!("Part 1: {}", part1(&almanac));
+    println!("Part 2: {}", part2(&almanac));
 }
 
 #[derive(Debug)]
@@ -84,6 +87,21 @@ fn part1(almanac: &Almanac) -> u64 {
         .unwrap()
 }
 
+fn part2(almanac: &Almanac) -> u64 {
+    almanac
+        .seeds
+        .par_chunks_exact(2)
+        .flat_map(|xs| {
+            let f = xs[0];
+            let l = xs[1];
+
+            f..(f + l)
+        })
+        .map(|seed| find_lowest_location(&almanac.category_maps, &seed))
+        .min()
+        .unwrap()
+}
+
 fn find_lowest_location(category_maps: &Vec<Vec<CategoryMap>>, seed: &u64) -> u64 {
     category_maps.iter().fold(*seed, |current_seed, maps| {
         maps.iter()
@@ -134,5 +152,11 @@ mod tests {
     fn test_part1() {
         let almanac = Almanac::parse(INPUT);
         assert_eq!(part1(&almanac), 35);
+    }
+
+    #[test]
+    fn test_part2() {
+        let almanac = Almanac::parse(INPUT);
+        assert_eq!(part2(&almanac), 46);
     }
 }
