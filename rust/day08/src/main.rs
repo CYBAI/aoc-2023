@@ -5,18 +5,19 @@ fn main() {
     let nav = parse(input);
 
     println!("Part 1: {}", part1(&nav));
+    println!("Part 2: {}", part2(&nav));
 }
 
-fn part1(nav: &Navigation) -> u64 {
-    const START: &str = "AAA";
-    const END: &str = "ZZZ";
-
+fn find<F>(start: &str, has_finished: F, nav: &Navigation) -> u64
+where
+    F: Fn(&str) -> bool,
+{
     let mut count = 0;
-    let mut current = START;
+    let mut current = start;
 
     let mut instructions = nav.instructions.iter().cycle();
 
-    while current != END {
+    while !has_finished(current) {
         let node = nav.nodes.get(current).unwrap();
         let direction = instructions.next().unwrap();
 
@@ -28,7 +29,43 @@ fn part1(nav: &Navigation) -> u64 {
         count += 1;
     }
 
-    count as u64
+    count
+}
+
+fn part1(nav: &Navigation) -> u64 {
+    const START: &str = "AAA";
+    const END: &str = "ZZZ";
+    find(START, |node| node == END, nav)
+}
+
+fn part2(nav: &Navigation) -> u64 {
+    nav.nodes
+        .keys()
+        .filter_map(|k| {
+            if k.ends_with("A") {
+                Some(find(k, |node| node.ends_with("Z"), nav))
+            } else {
+                None
+            }
+        })
+        .fold(1, |acc, f| lcm(acc, f))
+}
+
+fn lcm(a: u64, b: u64) -> u64 {
+    a * b / gcd(a, b)
+}
+
+fn gcd(a: u64, b: u64) -> u64 {
+    let mut a = a;
+    let mut b = b;
+
+    while b != 0 {
+        let t = b;
+        b = a % b;
+        a = t;
+    }
+
+    a
 }
 
 fn parse(input: &str) -> Navigation {
@@ -100,17 +137,35 @@ struct Node {
 mod tests {
     use super::*;
 
-    const EXAMPLE_INPUT: &str = "
-        LLR
-
-        AAA = (BBB, BBB)
-        BBB = (AAA, ZZZ)
-        ZZZ = (ZZZ, ZZZ)
-    ";
-
     #[test]
     fn test_part1() {
+        const EXAMPLE_INPUT: &str = "
+            LLR
+
+            AAA = (BBB, BBB)
+            BBB = (AAA, ZZZ)
+            ZZZ = (ZZZ, ZZZ)
+        ";
         let nav = parse(EXAMPLE_INPUT);
         assert_eq!(part1(&nav), 6);
+    }
+
+    #[test]
+    fn test_part2() {
+        const EXAMPLE_INPUT_2: &str = "
+            LR
+
+            11A = (11B, XXX)
+            11B = (XXX, 11Z)
+            11Z = (11B, XXX)
+            22A = (22B, XXX)
+            22B = (22C, 22C)
+            22C = (22Z, 22Z)
+            22Z = (22B, 22B)
+            XXX = (XXX, XXX)
+        ";
+
+        let nav = parse(EXAMPLE_INPUT_2);
+        assert_eq!(part2(&nav), 6);
     }
 }
