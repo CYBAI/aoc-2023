@@ -8,7 +8,7 @@ fn main() {
     println!("Part 2: {}", part2(&nav));
 }
 
-fn find<F>(start: &str, has_finished: F, nav: &Navigation) -> u64
+fn find<'a, F>(start: &str, has_finished: F, nav: &Navigation<'a>) -> u64
 where
     F: Fn(&str) -> bool,
 {
@@ -22,8 +22,8 @@ where
         let direction = instructions.next().unwrap();
 
         match direction {
-            Direction::Left => current = node.next.0.as_str(),
-            Direction::Right => current = node.next.1.as_str(),
+            Direction::Left => current = node.0,
+            Direction::Right => current = node.1,
         }
 
         count += 1;
@@ -68,37 +68,39 @@ fn gcd(a: u64, b: u64) -> u64 {
     a
 }
 
-fn parse(input: &str) -> Navigation {
-    let mut instructions = Vec::new();
-    let mut nodes = HashMap::new();
+fn parse(input: &str) -> Navigation<'_> {
+    let mut lines = input.lines().skip_while(|l| l.trim().is_empty());
 
-    for line in input.lines() {
-        let line = line.trim();
+    let instructions = lines
+        .next()
+        .unwrap()
+        .trim()
+        .chars()
+        .map(|c| c.into())
+        .collect::<Vec<_>>();
 
-        if line.is_empty() {
-            continue;
-        }
+    let nodes = lines
+        .filter_map(|line| {
+            let line = line.trim();
 
-        if instructions.is_empty() {
-            instructions = line.chars().map(|c| c.into()).collect();
-        } else {
+            if line.is_empty() {
+                return None;
+            }
+
             let mut parts = line.splitn(2, " = ");
-            let name = parts.next().unwrap().to_string();
+            let name = parts.next().unwrap();
             let next = parts
                 .next()
                 .unwrap()
+                .trim_start_matches("(")
+                .trim_end_matches(")")
                 .split(", ")
-                .map(|s| s.replace("(", "").replace(")", ""))
                 .collect::<Vec<_>>();
 
-            nodes.insert(
-                name.clone(),
-                Node {
-                    next: (next[0].clone(), next[1].clone()),
-                },
-            );
-        }
-    }
+            let value = (next[0], next[1]);
+            Some((name, value))
+        })
+        .collect::<HashMap<_, _>>();
 
     Navigation {
         instructions,
@@ -123,14 +125,9 @@ impl From<char> for Direction {
 }
 
 #[derive(Debug)]
-struct Navigation {
+struct Navigation<'a> {
     instructions: Vec<Direction>,
-    nodes: HashMap<String, Node>,
-}
-
-#[derive(Debug)]
-struct Node {
-    next: (String, String),
+    nodes: HashMap<&'a str, (&'a str, &'a str)>,
 }
 
 #[cfg(test)]
