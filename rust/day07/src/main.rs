@@ -10,8 +10,8 @@ fn main() {
     println!("Part 2: {}", calculate(&part2));
 }
 
-fn calculate(hands: &Vec<Hand>) -> u64 {
-    let mut hands = hands.into_iter().collect::<Vec<_>>();
+fn calculate(hands: &[Hand]) -> u64 {
+    let mut hands = hands.iter().collect::<Vec<_>>();
     hands.sort();
     hands
         .iter()
@@ -68,7 +68,7 @@ impl Ord for Cards {
     }
 }
 
-#[derive(Debug, Eq, Ord)]
+#[derive(Debug, Eq)]
 struct Hand {
     cards: Cards,
     kind: HandKind,
@@ -88,6 +88,12 @@ impl PartialOrd for Hand {
         } else {
             Some(self.kind.cmp(&other.kind))
         }
+    }
+}
+
+impl Ord for Hand {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
     }
 }
 

@@ -17,7 +17,7 @@ impl Card {
 
 fn main() {
     let input = include_str!("./input");
-    let cards = parse(&input);
+    let cards = parse(input);
 
     println!("Part 1: {}", part1(&cards));
     println!("Part 2: {}", part2(&cards));

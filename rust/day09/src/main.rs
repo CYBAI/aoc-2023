@@ -30,14 +30,14 @@ fn parse(input: &str) -> Vec<History> {
 fn part1(histories: &[History]) -> i64 {
     histories
         .iter()
-        .map(|history| find_next_num(&history))
+        .map(|history| find_next_num(history))
         .sum()
 }
 
 fn part2(histories: &[History]) -> i64 {
     histories
         .iter()
-        .map(|history| find_previous_num(&history))
+        .map(|history| find_previous_num(history))
         .sum()
 }
 

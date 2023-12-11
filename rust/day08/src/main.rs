@@ -8,7 +8,7 @@ fn main() {
     println!("Part 2: {}", part2(&nav));
 }
 
-fn find<'a, F>(start: &str, has_finished: F, nav: &Navigation<'a>) -> u64
+fn find<F>(start: &str, has_finished: F, nav: &Navigation<'_>) -> u64
 where
     F: Fn(&str) -> bool,
 {
@@ -42,13 +42,13 @@ fn part2(nav: &Navigation) -> u64 {
     nav.nodes
         .keys()
         .filter_map(|k| {
-            if k.ends_with("A") {
-                Some(find(k, |node| node.ends_with("Z"), nav))
+            if k.ends_with('A') {
+                Some(find(k, |node| node.ends_with('Z'), nav))
             } else {
                 None
             }
         })
-        .fold(1, |acc, f| lcm(acc, f))
+        .fold(1, lcm)
 }
 
 fn lcm(a: u64, b: u64) -> u64 {
@@ -92,8 +92,8 @@ fn parse(input: &str) -> Navigation<'_> {
             let next = parts
                 .next()
                 .unwrap()
-                .trim_start_matches("(")
-                .trim_end_matches(")")
+                .trim_start_matches('(')
+                .trim_end_matches(')')
                 .split(", ")
                 .collect::<Vec<_>>();
 

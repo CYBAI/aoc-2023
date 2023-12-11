@@ -31,7 +31,7 @@ impl Almanac {
             let mut vecs = Vec::new();
 
             let line = group.trim();
-            let maps = line.split("\n").skip(1).collect::<Vec<_>>();
+            let maps = line.split('\n').skip(1).collect::<Vec<_>>();
 
             for map in maps {
                 let nums = map.split_whitespace().collect::<Vec<_>>();
@@ -102,7 +102,7 @@ fn part2(almanac: &Almanac) -> u64 {
         .unwrap()
 }
 
-fn find_lowest_location(category_maps: &Vec<Vec<CategoryMap>>, seed: &u64) -> u64 {
+fn find_lowest_location(category_maps: &[Vec<CategoryMap>], seed: &u64) -> u64 {
     category_maps.iter().fold(*seed, |current_seed, maps| {
         maps.iter()
             .find_map(|map| map.convert(current_seed))

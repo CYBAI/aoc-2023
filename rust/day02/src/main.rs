@@ -4,7 +4,7 @@ use lazy_regex::regex;
 
 fn main() {
     let input = include_str!("./input");
-    let games = parse(&input);
+    let games = parse(input);
 
     println!("Part 1: {}", part1(&games));
     println!("Part 2: {}", part2(&games));

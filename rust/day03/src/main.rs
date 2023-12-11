@@ -16,7 +16,7 @@ struct Board {
 
 fn main() {
     let input = include_str!("./input");
-    let board = parse(&input);
+    let board = parse(input);
 
     println!("Part 1: {}", part1(&board));
     println!("Part 2: {}", part2(&board));
